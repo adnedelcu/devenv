@@ -1,0 +1,35 @@
+version: '3'
+services:
+    php:
+        build: .
+        command: -c /etc/supervisor/conf.d/supervisord.conf
+        ports:
+            - "5001:80"
+            - "5002:443"
+        links:
+            - mysql
+            - memcached
+            - redis
+        volumes:
+            - ./www:/var/www
+            - ./sites:/etc/nginx/conf.d
+            - ./logs:/var/log/supervisor
+
+    mysql:
+        image: mysql
+        ports:
+            - "5003:3306"
+        volumes:
+            - ./mysql:/var/lib/mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: Alexandru90
+
+    memcached:
+        image: memcached
+        ports:
+            - "5004:11211"
+
+    redis:
+        image: redis
+        ports:
+            - "5005:6379"
