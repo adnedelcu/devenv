@@ -1,19 +1,38 @@
 version: '3'
 services:
-    php:
-        build: .
-        command: -c /etc/supervisor/conf.d/supervisord.conf
-        ports:
-            - "5001:80"
-            - "5002:443"
-        links:
-            - mysql
-            - memcached
-            - redis
+    # php:
+    #     build:
+    #         context: .
+    #         args:
+    #             - http_proxy=${http_proxy}
+    #             - https_proxy=${https_proxy}
+    #     command: -c /etc/supervisor/conf.d/supervisord.conf
+    #     ports:
+    #         - "5001:80"
+    #         - "5002:443"
+    #     links:
+    #         - mysql
+    #         - memcached
+    #         - redis
+    #     volumes:
+    #         - ./www:/var/www
+    #         - ./sites:/etc/nginx/conf.d
+    #         - ./logs:/var/log/supervisor
+
+    web:
+        image: nginx
+        # ports:
+        #     - "8080:80"
         volumes:
-            - ./www:/var/www
+            - ./www:/var/www/html
             - ./sites:/etc/nginx/conf.d
-            - ./logs:/var/log/supervisor
+        links:
+            - php
+
+    php:
+        image: php:7-fpm
+        volumes:
+            - ./www:/var/www/html
 
     mysql:
         image: mysql

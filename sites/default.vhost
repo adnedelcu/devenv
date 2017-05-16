@@ -1,7 +1,10 @@
 server {
-    server_name default;
-    root        /var/www/default;
-    index       index.php;
+    server_name localhost;
+    root        /var/www/html/default;
+    index       index.php index.html;
+
+    error_log   /var/log/nginx/error.log;
+    access_log  /var/log/nginx/access.log;
 
     client_max_body_size 100M;
     fastcgi_read_timeout 1800;
@@ -17,10 +20,12 @@ server {
     }
 
     location ~ \.php$ {
-        try_files     $uri =404;
-        include       fastcgi_params;
-        fastcgi_index index.php;
-        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-        fastcgi_pass  unix:/var/run/php/php7.0-fpm.sock;
+        try_files               $uri =404;
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass            php:9000;
+        fastcgi_index           index.php;
+        include                 fastcgi_params;
+        fastcgi_param           SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param           PATH_INFO $fastcgi_path_info;
     }
 }
