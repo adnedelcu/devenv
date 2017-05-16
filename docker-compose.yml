@@ -21,8 +21,8 @@ services:
 
     web:
         image: nginx
-        # ports:
-        #     - "8080:80"
+        ports:
+            - "8080:80"
         volumes:
             - ./www:/var/www/html
             - ./sites:/etc/nginx/conf.d
