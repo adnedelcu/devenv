@@ -2,7 +2,7 @@
 # Base image
 ################################################################################
 
-FROM nginx
+FROM php:7.1-fpm
 
 ################################################################################
 # Build instructions
@@ -16,71 +16,45 @@ ARG https_proxy
 # Remove default nginx configs.
 RUN rm -f /etc/nginx/conf.d/*
 
-# Install PHP 7 Repo
-RUN apt-get update && apt-get install -my wget gnupg2
-RUN sh -c "echo 'deb http://packages.dotdeb.org jessie all' >> /etc/apt/sources.list"
-RUN sh -c "echo 'deb-src http://packages.dotdeb.org jessie all' >> /etc/apt/sources.list"
-RUN wget -e use_proxy=yes -e https_proxy="$https_proxy" "https://www.dotdeb.org/dotdeb.gpg" -O - | apt-key add -
-RUN wget -e use_proxy=yes -e https_proxy="$https_proxy" "https://nginx.org/keys/nginx_signing.key" -O - | apt-key add -
-
-# Install packages
+# Install PHP packages
 RUN apt-get update && apt-get install -my \
-  supervisor \
-  curl \
-  php7.0-common \
-  php7.0-curl \
-  php7.0-fpm \
-  php7.0-gd \
-  php7.0-memcached \
-  php7.0-mysql \
-  php7.0-mcrypt \
-  php7.0-mbstring \
-  php7.0-sqlite \
-  php7.0-xdebug \
-  php7.0-xml \
-  php7.0-xsl
+        wget \
+        gnupg2 \
+        libfreetype6-dev \
+        libjpeg62-turbo-dev \
+        libmcrypt-dev \
+        libpng12-dev \
+        libmemcached-dev \
+        libxml2-dev \
+        libxslt-dev \
+        zlib1g-dev \
+    && docker-php-ext-install -j$(nproc) iconv mcrypt mbstring pdo_mysql \
+    && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include \
+    && docker-php-ext-configure xml --with-libxml-dir=/usr/include \
+    && docker-php-ext-install -j$(nproc) gd \
+    && docker-php-ext-install -j$(nproc) xml xsl zip
 
-# Ensure that PHP7 FPM is run as root.
-RUN sed -i "s/user = www-data/user = root/" /etc/php/7.0/fpm/pool.d/www.conf
-RUN sed -i "s/group = www-data/group = root/" /etc/php/7.0/fpm/pool.d/www.conf
+RUN pear config-set http_proxy ${http_proxy}
 
-# Pass all docker environment
-RUN sed -i '/^;clear_env = no/s/^;//' /etc/php/7.0/fpm/pool.d/www.conf
-
-# Get access to FPM-ping page /ping
-RUN sed -i '/^;ping\.path/s/^;//' /etc/php/7.0/fpm/pool.d/www.conf
-# Get access to FPM_Status page /status
-RUN sed -i '/^;pm\.status_path/s/^;//' /etc/php/7.0/fpm/pool.d/www.conf
-
-# Prevent PHP Warning: 'xdebug' already loaded.
-# XDebug loaded with the core
-RUN sed -i '/.*xdebug.so$/s/^/;/' /etc/php/7.0/mods-available/xdebug.ini
-
-# Install HHVM
-RUN apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0x5a16e7281be7a449
-RUN echo deb http://dl.hhvm.com/debian jessie main | tee /etc/apt/sources.list.d/hhvm.list
-RUN apt-get update && apt-get install -y hhvm
-
-# Add configuration files
-COPY conf/nginx.conf /etc/nginx/
-COPY conf/supervisord.conf /etc/supervisor/conf.d/
-COPY conf/php.ini /etc/php/7.0/fpm/conf.d/40-custom.ini
-COPY conf/my.cnf /etc/mysql/my.cnf
+RUN pecl install redis \
+    && pecl install xdebug \
+    && pecl install memcached \
+    && docker-php-ext-enable redis xdebug memcached
 
 ################################################################################
 # Volumes
 ################################################################################
 
-VOLUME ["/var/www", "/etc/nginx/conf.d"]
+# VOLUME []
 
 ################################################################################
 # Ports
 ################################################################################
 
-EXPOSE 80 443
+# EXPOSE 80 443
 
 ################################################################################
 # Entrypoint
 ################################################################################
 
-ENTRYPOINT ["/usr/bin/supervisord"]
+# ENTRYPOINT ["/usr/bin/supervisord"]
