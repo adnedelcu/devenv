@@ -1,0 +1,2 @@
+Acquire::http::Proxy "[proxy-url]";
+Acquire::https::Proxy "[proxy-url]";
