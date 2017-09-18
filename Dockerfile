@@ -46,6 +46,8 @@ RUN pecl install redis \
 RUN pecl install apcu && \
     docker-php-ext-enable apcu
 
+COPY conf/apcu.ini /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini
+
 ################################################################################
 # Volumes
 ################################################################################
