@@ -31,10 +31,7 @@ RUN apt-get update && apt-get install -my \
     && docker-php-ext-install -j$(nproc) iconv mcrypt mbstring pdo_mysql \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include \
     && docker-php-ext-configure xml --with-libxml-dir=/usr/include \
-    && docker-php-ext-configure opcache --enable-opcache \
-    && docker-php-ext-install -j$(nproc) gd xml xsl zip opcache
-
-COPY conf/opcache.ini /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini
+    && docker-php-ext-install -j$(nproc) gd xml xsl zip
 
 RUN pear config-set http_proxy ${http_proxy}
 
@@ -42,11 +39,6 @@ RUN pecl install redis \
     && pecl install xdebug \
     && pecl install memcached \
     && docker-php-ext-enable redis xdebug memcached
-
-RUN pecl install apcu && \
-    docker-php-ext-enable apcu
-
-COPY conf/apcu.ini /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini
 
 ################################################################################
 # Volumes
