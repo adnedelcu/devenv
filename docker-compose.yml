@@ -14,12 +14,14 @@ services:
             - ./www:/var/www/html
 
     web:
-        image: nginx
+        image: nginx:alpine
         ports:
             - "8080:80"
+            - "8081:443"
         volumes:
             - ./www:/var/www/html
             - ./sites:/etc/nginx/conf.d
+            - ./ssl:/etc/nginx/ssl
         links:
             - php
 
@@ -34,13 +36,14 @@ services:
             - "5003:3306"
         volumes:
             - ./mysql:/var/lib/mysql
+            - ./conf/my.cnf:/etc/mysql/conf.d/my_custom.cnf
         environment:
             MYSQL_ROOT_PASSWORD: Alexandru90
 
     memcached:
-        image: memcached
+        image: memcached:alpine
         ports:
             - "5004:11211"
 
     redis:
-        image: redis
+        image: redis:alpine
