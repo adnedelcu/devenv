@@ -40,6 +40,9 @@ RUN pecl install redis \
     && pecl install memcached \
     && docker-php-ext-enable redis xdebug memcached
 
+RUN pecl install apcu \
+    && docker-php-ext-enable apcu
+
 ################################################################################
 # Volumes
 ################################################################################
