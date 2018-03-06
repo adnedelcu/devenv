@@ -7,11 +7,15 @@ FROM php:7.1-fpm
 ################################################################################
 # Build instructions
 ################################################################################
-COPY conf/apt.conf /etc/apt/apt.conf.d/
 
+# COPY conf/apt.conf /etc/apt/apt.conf.d/
+
+################################################################################
 # Arguments
-ARG http_proxy
-ARG https_proxy
+################################################################################
+
+# ARG http_proxy
+# ARG https_proxy
 
 # Remove default nginx configs.
 RUN rm -f /etc/nginx/conf.d/*
@@ -33,7 +37,7 @@ RUN apt-get update && apt-get install -my \
     && docker-php-ext-configure xml --with-libxml-dir=/usr/include \
     && docker-php-ext-install -j$(nproc) gd xml xsl zip pcntl
 
-RUN pear config-set http_proxy ${http_proxy}
+# RUN pear config-set http_proxy ${http_proxy}
 
 RUN pecl install redis \
     && pecl install xdebug \
