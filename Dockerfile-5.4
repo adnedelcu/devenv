@@ -98,8 +98,8 @@ WORKDIR /var/www
 # Entrypoint
 ################################################################################
 
-COPY conf/docker-entrypoint-5.4.sh /entrypoint.sh
-COPY conf/php.ini $PHP_INI_DIR/conf.d/40-user.ini
+COPY docker-entrypoint-5.4.sh /entrypoint.sh
+COPY conf/php.ini $PHP_INI_DIR/conf.d/40-custom.ini
 
 RUN chmod +x /entrypoint.sh
 

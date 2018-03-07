@@ -26,8 +26,8 @@ services:
             - 443:443
         volumes:
             - ./www:/var/www/html
-        tty: true
         environment:
+            PHP_php5enmod: 'xdebug'
             HTTPD__DocumentRoot: '/var/www/html/one2move-old'
             HTTPD__DirectoryIndex: 'index.php'
             HTTPD_a2enmod: 'access_compat alias auth_basic authn_core authn_file authz_core authz_host authz_user autoindex deflate dir env filter mime mpm_prefork negotiation php5 rewrite setenvif status'
